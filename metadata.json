@@ -1,0 +1,7 @@
+{
+  "name": "PeerSolve",
+  "description": "A peer-to-peer doubt solving network for students with AI-powered feedback analysis, real-time leaderboards, and accessibility features like speech-to-text and translation.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
