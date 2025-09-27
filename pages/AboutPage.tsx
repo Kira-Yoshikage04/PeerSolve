@@ -1,5 +1,4 @@
 import React from 'react';
-import Logo from '../components/Logo';
 
 const FeatureCard = ({ icon, title, description }: { icon: string, title: string, description: string }) => (
     <div className="bg-slate-100 dark:bg-gray-800 p-6 rounded-lg border border-slate-200 dark:border-gray-700 h-full">
@@ -13,10 +12,7 @@ const AboutPage = () => {
   return (
     <div className="max-w-4xl mx-auto animate-fade-in-up">
       <div className="text-center mb-12">
-        <div className="inline-block">
-           <Logo className="h-24 w-auto" />
-        </div>
-        <h1 className="text-4xl font-extrabold text-gray-800 dark:text-gray-100 mt-4">Welcome to PeerSolve</h1>
+        <h1 className="text-4xl font-extrabold text-gray-800 dark:text-gray-100">Welcome to PeerSolve</h1>
         <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Our mission is to create a collaborative and accessible learning environment where students can help each other succeed.
         </p>
@@ -50,7 +46,7 @@ const AboutPage = () => {
              <FeatureCard 
                 icon="🌐"
                 title="Multi-language Support"
-                description="Break language barriers with our one-click translation feature for both doubts and answers, powered by Gemini."
+                description="Break language barriers with our flexible translation feature for both doubts and answers, powered by Gemini. Select a language and translate content on the fly."
             />
         </div>
       </div>

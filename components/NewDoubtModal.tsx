@@ -46,6 +46,7 @@ const NewDoubtModal: React.FC<NewDoubtModalProps> = ({ onClose }) => {
       description,
       subject,
       year,
+      branch: user.branch,
       authorId: user.id,
     });
     setIsSubmitting(false);
@@ -101,7 +102,7 @@ const NewDoubtModal: React.FC<NewDoubtModalProps> = ({ onClose }) => {
                 onChange={(e) => setTitle(e.target.value)} 
                 required 
                 aria-required="true"
-                className={`mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-shadow ${isListening && activeSpeechField === 'title' ? 'ring-2 ring-blue-500' : ''}`}
+                className={`mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-shadow ${isListening && activeSpeechField === 'title' ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-gray-600' : 'bg-white dark:bg-gray-700'}`}
               />
                <button type="button" onClick={() => handleMicClick('title')} className="absolute top-8 right-3 p-1 rounded-full" aria-label="Dictate title" aria-pressed={isListening && activeSpeechField === 'title'}>
                   <MicIcon isListening={isListening && activeSpeechField === 'title'}/>
@@ -121,14 +122,14 @@ const NewDoubtModal: React.FC<NewDoubtModalProps> = ({ onClose }) => {
                 required 
                 aria-required="true"
                 rows={6} 
-                className={`mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-shadow ${isListening && activeSpeechField === 'description' ? 'ring-2 ring-blue-500' : ''}`}
+                className={`mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-shadow ${isListening && activeSpeechField === 'description' ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-gray-600' : 'bg-white dark:bg-gray-700'}`}
               ></textarea>
                <button type="button" onClick={() => handleMicClick('description')} className="absolute top-8 right-3 p-1 rounded-full" aria-label="Dictate description" aria-pressed={isListening && activeSpeechField === 'description'}>
                   <MicIcon isListening={isListening && activeSpeechField === 'description'}/>
               </button>
             </div>
              {speechError && <p role="alert" className="text-sm text-red-500">{speechError}</p>}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Subject</label>
                   <select id="subject" value={subject} onChange={(e) => setSubject(e.target.value as Subject)} required aria-required="true" className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -144,7 +145,7 @@ const NewDoubtModal: React.FC<NewDoubtModalProps> = ({ onClose }) => {
             </div>
           </div>
           <div className="mt-8 flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 dark:bg-gray-600 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-500">Cancel</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-slate-100 dark:bg-gray-600 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-500 hover:bg-slate-200 dark:hover:bg-gray-500">Cancel</button>
             <button type="submit" disabled={isSubmitting} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
               {isSubmitting ? 'Posting...' : 'Post Doubt'}
             </button>

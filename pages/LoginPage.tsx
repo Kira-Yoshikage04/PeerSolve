@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ALLOWED_DOMAIN } from '../constants';
-import Logo from '../components/Logo';
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48">
@@ -25,10 +24,10 @@ const LoginPage = () => {
   }, [user, navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-gray-900">
       <div className="w-full max-w-sm p-8 space-y-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl text-center animate-fade-in-up">
         <div className="flex flex-col items-center">
-           <Logo className="h-20 w-auto mb-4" />
+           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">PeerSolve</h1>
            <p className="mt-2 text-gray-600 dark:text-gray-400">Your Peer-to-Peer Doubt Solving Network</p>
         </div>
 

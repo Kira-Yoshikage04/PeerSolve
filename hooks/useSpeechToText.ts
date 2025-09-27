@@ -38,7 +38,16 @@ export const useSpeechToText = (onTranscriptChange: (transcript: string) => void
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  
+  // This ref will hold the latest `isListening` value, preventing stale closures in `onend`.
+  const isListeningRef = useRef(isListening);
+  isListeningRef.current = isListening;
+  
+  // This ref holds the latest `onTranscriptChange` callback to prevent stale closures.
+  const onTranscriptChangeRef = useRef(onTranscriptChange);
+  onTranscriptChangeRef.current = onTranscriptChange;
 
+  // This effect runs only once to set up the singleton recognition instance and its event handlers.
   useEffect(() => {
     if (!SpeechRecognition) {
       setError('Speech recognition not supported in this browser.');
@@ -58,44 +67,53 @@ export const useSpeechToText = (onTranscriptChange: (transcript: string) => void
         }
       }
       if (finalTranscript) {
-        onTranscriptChange(finalTranscript);
+        onTranscriptChangeRef.current(finalTranscript);
       }
     };
     
     recognition.onerror = (event) => {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
             setError('Microphone permission denied. Please enable it in your browser settings.');
-        } else {
+        } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
             setError(`Speech recognition error: ${event.error}`);
         }
+        // An error should always stop the listening process.
         setIsListening(false);
     };
 
     recognition.onend = () => {
-      // It can stop automatically, so we sync state
-      if (isListening) {
-        // if we want it to keep listening, restart it
+      // This handler is called when recognition ends for any reason.
+      // We check our ref to see if the user *still intends* to be listening.
+      // If so, it was likely a browser timeout, and we should restart.
+      if (isListeningRef.current) {
          recognition.start();
       }
     };
     
     recognitionRef.current = recognition;
 
+    // Cleanup: when the component unmounts, stop recognition.
     return () => {
+      isListeningRef.current = false; // Prevent onend from restarting during unmount.
       recognition.stop();
     };
-  }, [onTranscriptChange, isListening]);
+  }, []); // Empty dependency array means this runs only once.
   
   const toggleListening = () => {
+    if (!recognitionRef.current) return;
+
     if (isListening) {
-      recognitionRef.current?.stop();
+      // User wants to stop listening. Update state, which updates the ref.
+      // `recognition.stop()` will trigger `onend`, but the ref will be `false`, preventing a restart.
       setIsListening(false);
+      recognitionRef.current.stop();
     } else {
+      // User wants to start listening.
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(() => {
-          recognitionRef.current?.start();
-          setIsListening(true);
           setError(null);
+          setIsListening(true); // Update state, which updates the ref.
+          recognitionRef.current?.start();
         })
         .catch((err) => {
           setError('Microphone access was not granted.');
@@ -103,7 +121,6 @@ export const useSpeechToText = (onTranscriptChange: (transcript: string) => void
         });
     }
   };
-
 
   return { isListening, error, toggleListening };
 };

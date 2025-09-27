@@ -2,13 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Role } from '../types';
-import Logo from './Logo';
+import { useModal } from '../hooks/useModal';
+import ThemeSwitcher from './ThemeSwitcher';
+
+const PlusIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+);
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { openModal } = useModal();
 
   const handleLogout = () => {
     logout();
@@ -37,9 +43,8 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-6">
-            <Link to="/" className="flex items-center space-x-2">
-                <Logo className="h-9 w-auto" />
-                <span className="text-xl font-bold text-gray-800 dark:text-white hidden sm:inline">PeerSolve</span>
+            <Link to="/" className="flex items-center">
+                <span className="text-xl font-bold text-gray-800 dark:text-white">PeerSolve</span>
             </Link>
             {user && (
               <nav className="hidden md:flex items-center space-x-2">
@@ -49,7 +54,19 @@ const Header = () => {
               </nav>
             )}
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4 sm:space-x-6">
+            <ThemeSwitcher />
+            {user && (
+                 <button
+                    onClick={() => openModal('newDoubt')}
+                    className="inline-flex items-center justify-center p-2 sm:px-3 sm:py-1.5 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition shadow-sm"
+                    aria-label="Post a new doubt"
+                >
+                    <PlusIcon />
+                    <span className="hidden sm:inline ml-2">Post Doubt</span>
+                </button>
+            )}
+            
             {user ? (
               <div className="relative" ref={dropdownRef}>
                  <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center space-x-2 focus:outline-none p-1 rounded-full focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800 transition-transform hover:scale-105">

@@ -2,6 +2,8 @@ import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
 import { DataProvider } from '../context/DataContext';
+import { ModalProvider } from '../context/ModalContext';
+import { ThemeProvider } from '../context/ThemeContext';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 import Layout from '../components/Layout';
@@ -17,25 +19,29 @@ import { Role } from '../types';
 
 function App() {
   return (
-    <AuthProvider>
-      <DataProvider>
-        <HashRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            
-            <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route index element={<FeedPage />} />
-              <Route path="doubt/:id" element={<DoubtPage />} />
-              <Route path="leaderboard" element={<LeaderboardPage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="profile" element={<UserProfilePage />} />
-            </Route>
+    <ThemeProvider>
+      <AuthProvider>
+        <DataProvider>
+          <ModalProvider>
+            <HashRouter>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                
+                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                  <Route index element={<FeedPage />} />
+                  <Route path="doubt/:id" element={<DoubtPage />} />
+                  <Route path="leaderboard" element={<LeaderboardPage />} />
+                  <Route path="about" element={<AboutPage />} />
+                  <Route path="profile" element={<UserProfilePage />} />
+                </Route>
 
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </HashRouter>
-      </DataProvider>
-    </AuthProvider>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </HashRouter>
+          </ModalProvider>
+        </DataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -11,6 +11,7 @@ export interface User {
   avatarUrl: string;
   role: Role;
   points: number;
+  branch: Branch;
   accessGranted: boolean;
 }
 
@@ -30,6 +31,15 @@ export enum Subject {
   ELECTRICAL_ENGINEERING = 'Electrical Engineering',
 }
 
+export enum Branch {
+  CSE = 'Computer Science & Engg.',
+  ECE = 'Electronics & Communication',
+  CE = 'Chemical Engineering',
+  EEE = 'Electrical & Electronics',
+  CIVIL = 'Civil Engineering',
+  MECH = 'Mechanical Engineering',
+}
+
 export interface Doubt {
   id: string;
   title: string;
@@ -39,6 +49,7 @@ export interface Doubt {
   authorAvatar: string;
   subject: Subject;
   year: AcademicYear;
+  branch: Branch;
   createdAt: string;
   isResolved: boolean;
 }
@@ -47,6 +58,8 @@ export interface Answer {
   id: string;
   doubtId: string;
   text: string;
+  videoUrl?: string;
+  audioUrl?: string;
   authorId: string;
   authorName: string;
   authorAvatar: string;

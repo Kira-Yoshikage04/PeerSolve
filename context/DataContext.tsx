@@ -1,8 +1,8 @@
+
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Doubt, Answer, User, Feedback } from '../types';
 import { 
   getDoubts as dbGetDoubts, 
-  getAnswersForDoubt,
   addDoubt as dbAddDoubt,
   addAnswer as dbAddAnswer,
   addFeedbackToAnswer as dbAddFeedback,
@@ -12,10 +12,9 @@ import {
   getUserById as dbGetUserById,
   deleteDoubt as dbDeleteDoubt,
   getAllAnswers as dbGetAllAnswers,
-  // FIX: Import the new database function.
   updateUserAccess as dbUpdateUserAccess,
 } from '../services/db';
-import { analyzeFeedbackForPoints } from '../services/geminiService';
+import { analyzeFeedbackAndAwardPoints } from '../services/geminiService';
 
 interface DataContextType {
   doubts: Doubt[];
@@ -24,11 +23,10 @@ interface DataContextType {
   getAnswers: (doubtId: string | null) => Answer[];
   postDoubt: (doubt: Omit<Doubt, 'id' | 'createdAt' | 'authorName' | 'authorAvatar' | 'isResolved'>) => Promise<void>;
   postAnswer: (answer: Omit<Answer, 'id' | 'createdAt' | 'authorName' | 'authorAvatar'>) => Promise<void>;
-  submitFeedback: (answer: Answer, feedback: Feedback) => Promise<{ aiAnalyzed: boolean }>;
+  submitFeedback: (answerId: string, doubtId: string, answerAuthorId: string, feedback: Feedback) => Promise<void>;
   updateUserName: (userId: string, newName: string) => Promise<User | null>;
   getUserById: (userId: string) => User | undefined;
   deleteDoubt: (doubtId: string) => Promise<void>;
-  // FIX: Add updateUserAccess to the context type.
   updateUserAccess: (userId: string, accessGranted: boolean) => Promise<void>;
 }
 
@@ -46,8 +44,6 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
   const fetchData = useCallback(async () => {
     setLoadingDoubts(true);
-    // Note: Fetching all answers can be slow with many records.
-    // This is kept simple to match the original mock implementation's behavior.
     const [doubtsData, usersData, answersData] = await Promise.all([
         dbGetDoubts(),
         dbGetUsers(),
@@ -77,28 +73,20 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
   const postAnswer = async (answerData: Omit<Answer, 'id' | 'createdAt' | 'authorName' | 'authorAvatar'>) => {
     await dbAddAnswer(answerData);
-    await fetchData(); // Refetch all data
+    await fetchData(); // Refetch all data to show new answer
   };
   
-  const submitFeedback = async (answer: Answer, feedback: Feedback): Promise<{ aiAnalyzed: boolean }> => {
-    let points = 0;
-    let aiAnalyzed = true;
-
+  const submitFeedback = async (answerId: string, doubtId: string, answerAuthorId: string, feedback: Feedback) => {
     try {
-      points = await analyzeFeedbackForPoints(feedback);
+        const aiAnalysis = await analyzeFeedbackAndAwardPoints(feedback.review, feedback.rating);
+        await dbAddFeedback(answerId, doubtId, feedback);
+        await dbUpdateUserPoints(answerAuthorId, aiAnalysis.points);
     } catch (error) {
-      console.warn("AI feedback analysis failed. Using fallback.", error);
-      points = feedback.rating * 2;
-      aiAnalyzed = false;
+        console.error("AI feedback analysis or DB update failed.", error);
+        throw new Error("Failed to submit feedback. Please try again.");
     }
-    
-    await dbAddFeedback(answer.id, answer.doubtId, feedback);
-    await dbUpdateUserPoints(answer.authorId, points);
-    
-    // Refetch all data to show updates
+
     await fetchData();
-    
-    return { aiAnalyzed };
   };
   
   const updateUserName = async (userId: string, newName: string): Promise<User | null> => {
@@ -107,7 +95,6 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     return updatedUser;
   }
 
-  // FIX: Implement and expose the updateUserAccess function.
   const updateUserAccess = async (userId: string, accessGranted: boolean) => {
     await dbUpdateUserAccess(userId, accessGranted);
     await fetchData(); // Refetch users

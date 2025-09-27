@@ -5,7 +5,8 @@ import { Role } from '../types';
 import Spinner from './Spinner';
 
 interface ProtectedRouteProps {
-  children: JSX.Element;
+  // FIX: Replace JSX.Element with React.ReactElement to resolve namespace error.
+  children: React.ReactElement;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {

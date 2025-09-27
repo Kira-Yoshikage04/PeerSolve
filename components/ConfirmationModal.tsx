@@ -32,7 +32,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <button
             onClick={onClose}
             disabled={isConfirming}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 dark:bg-gray-600 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-500 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-slate-100 dark:bg-gray-600 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-500 hover:bg-slate-200 dark:hover:bg-gray-500 disabled:opacity-50"
           >
             {cancelText}
           </button>
